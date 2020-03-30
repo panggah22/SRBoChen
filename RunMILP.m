@@ -69,17 +69,5 @@ options.display = 'on';
     [ ], [ ], [ ], lb, ub, ctype, [ ], options);
 
 x = reshape(y,length(y)/steps,steps);
-% end
-% Load_demand = x(inp.Pl,:)*data.MVAbase*1000;
-% fprintf('| Load number |');
-% for i = 1:steps
-%     fprintf('  Step %d  |',i);
-% end
-% for i = 1:len.Pl
-%     fprintf('\n      L%d    ',data.load(i,3));
-%     for j = 1:steps
-%         fprintf('   %4.2f  ',Load_demand(i,j));
-%     end
-%     fprintf('\n');
-% end
+
 

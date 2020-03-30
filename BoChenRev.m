@@ -936,39 +936,39 @@ A49_bef = A49_bef(data.statload == 2,:);
 b49 = zeros(size(A49,1),1);
 [ineq(49).A,ineq(49).b] = time_relate(steps,A49_bef,A49,b49);
 
-% %% Constraint 52
-% Xbr51 = eye(len.Xbr);
-% Sn51_bef = zeros(len.Xbr,len.Sn);
-% for i = 1:len.Xbr
-%     Sn51_bef(i,data.branch(i,2)) = -1;
-%     Sn51_bef(i,data.branch(i,3)) = -1;
-% end
-% A52 = zeros(len.Xbr,len.total);
-% A52_bef = A52;
-% A52(:,inp.Xbr) = Xbr51;
-% A52 = A52(data.statbr == 2,:);
-% 
-% A52_bef(:,inp.Sn) = Sn51_bef;
-% A52_bef = A52_bef(data.statbr == 2,:);
-% 
-% b52 = zeros(size(A52,1),1);
-% [ineq(52).A,ineq(52).b] = time_relate(steps,A52_bef,A52,b52);
+%% Constraint 52
+Xbr51 = eye(len.Xbr);
+Sn51_bef = zeros(len.Xbr,len.Sn);
+for i = 1:len.Xbr
+    Sn51_bef(i,data.branch(i,2)) = -1;
+    Sn51_bef(i,data.branch(i,3)) = -1;
+end
+A52 = zeros(len.Xbr,len.total);
+A52_bef = A52;
+A52(:,inp.Xbr) = Xbr51;
+A52 = A52(data.statbr == 2,:);
+
+A52_bef(:,inp.Sn) = Sn51_bef;
+A52_bef = A52_bef(data.statbr == 2,:);
+
+b52 = zeros(size(A52,1),1);
+[ineq(52).A,ineq(52).b] = time_relate(steps,A52_bef,A52,b52);
 
 %% Constraint 53
-% Sn53 = ones(1,len.Sn);
-% Xbr53 = -ones(1,len.Xbr);
-% Xg53 = -ones(1,len.Xg);
-% % Xg53(data.statgen ~= 1) = 0;
-% 
-% Aeq53 = zeros(1,len.total);
-% Aeq53(:,inp.Sn) = Sn53;
-% Aeq53(:,inp.Xbr) = Xbr53;
-% Aeq53(:,inp.Xg) = Xg53;
-% 
-% beq53 = zeros(size(Aeq53,1));
-% 
-% equ(53).Aeq = concA(steps,Aeq53);
-% equ(53).beq = concB(steps,beq53);
+Sn53 = ones(1,len.Sn);
+Xbr53 = -ones(1,len.Xbr);
+Xg53 = -ones(1,len.Xg);
+% Xg53(data.statgen ~= 1) = 0;
+
+Aeq53 = zeros(1,len.total);
+Aeq53(:,inp.Sn) = Sn53;
+Aeq53(:,inp.Xbr) = Xbr53;
+Aeq53(:,inp.Xg) = Xg53;
+
+beq53 = zeros(size(Aeq53,1));
+
+equ(53).Aeq = concA(steps,Aeq53);
+equ(53).beq = concB(steps,beq53);
 
 %% Dumm
 % SnX = eye(len.Sn);

@@ -14,6 +14,41 @@ len = lengthbochen(data);
 inp = inputvariables(len);
 
 %% INITIAL CONDITION CONSTRAINTS
+
+%% Constraint 52
+Xbr51 = eye(len.Xbr);
+Sn51_bef = zeros(len.Xbr,len.Sn);
+for i = 1:len.Xbr
+    Sn51_bef(i,data.branch(i,2)) = -1;
+    Sn51_bef(i,data.branch(i,3)) = -1;
+end
+A52 = zeros(len.Xbr,len.total);
+A52_bef = A52;
+A52(:,inp.Xbr) = Xbr51;
+A52 = A52(data.statbr == 2,:);
+
+A52_bef(:,inp.Sn) = Sn51_bef;
+A52_bef = A52_bef(data.statbr == 2,:);
+
+b52 = zeros(size(A52,1),1);
+[ineq(52).A,ineq(52).b] = time_relate(steps,A52_bef,A52,b52);
+
+%% Constraint 53
+Sn53 = ones(1,len.Sn);
+Xbr53 = -ones(1,len.Xbr);
+Xg53 = -ones(1,len.Xg);
+Xg53(data.statgen ~= 1) = 0;
+
+Aeq53 = zeros(1,len.total);
+Aeq53(:,inp.Sn) = Sn53;
+Aeq53(:,inp.Xbr) = Xbr53;
+Aeq53(:,inp.Xg) = Xg53;
+
+beq53 = zeros(size(Aeq53,1));
+
+equ(53).Aeq = concA(steps,Aeq53);
+equ(53).beq = concB(steps,beq53);
+
 %% Constraint 54 // can be used as bound
 Xg54 = eye(len.Xg);
 Aeq54 = zeros(len.Xg,len.total);
@@ -107,6 +142,51 @@ Aeq2(:,[inp.Ql inp.Qbr inp.Qg inp.Qessc inp.Qessd]) = [Pl1 Pbr1 Pg1 Pessc1 Pessd
 beq2 = zeros(len.Sn,1);
 equ(2).Aeq = concA(steps,Aeq2);
 equ(2).beq = concB(steps,beq2);
+
+%% Constraint 3
+% C.3 -- A (( -M.X_br - P_br <= 0 ))
+Xbr3a = -bigM * eye(len.Xbr);
+Pbr3a = -eye(len.Pbr);
+A3a = zeros(size(Pbr3a,1),len.total);
+A3a(:,inp.Pbr) = Pbr3a; 
+A3a(:,inp.Xbr) = Xbr3a;
+b3a = zeros(size(Pbr3a,1),1);
+
+% C.3 -- B (( P_br - M.X_br <= 0 ))
+Xbr3b = -bigM * eye(len.Xbr);
+Pbr3b = -Pbr3a;
+A3b = zeros(size(Pbr3b,1),len.total);
+A3b(:,inp.Pbr) = Pbr3b; 
+A3b(:,inp.Xbr) = Xbr3b;
+b3b = b3a;
+
+% Concatenate
+A3 = [A3a; A3b]; b3 = [b3a; b3b];
+ineq(3).A = concA(steps,A3);
+ineq(3).b = concB(steps,b3);
+
+%% Constraint 4
+% C.3 -- A (( -M.X_br - Q_br <= 0 ))
+Xbr4a = -bigM * eye(len.Xbr);
+Qbr4a = -eye(len.Qbr);
+A4a = zeros(size(Qbr4a,1),len.total);
+A4a(:,inp.Qbr) = Qbr4a;
+A4a(:,inp.Xbr) = Xbr4a;
+b4a = zeros(size(Qbr4a,1),1);
+
+% C.3 -- B (( Q_br - M.X_br <= 0 ))
+Xbr4b = -bigM * eye(len.Xbr);
+Qbr4b = eye(len.Qbr);
+A4b = zeros(size(Qbr4b,1),len.total);
+A4b(:,inp.Qbr) = Qbr4b;
+A4b(:,inp.Xbr) = Xbr4b;
+b4b = b4a;
+
+A4 = [A4a; A4b];
+b4 = [b4a; b4b];
+ineq(4).A = concA(steps,A4);
+ineq(4).b = concB(steps,b4);
+
 
 %% Running the MILP
 RunMILP;
