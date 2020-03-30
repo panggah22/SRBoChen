@@ -188,6 +188,104 @@ ineq(4).A = concA(steps,A4);
 ineq(4).b = concB(steps,b4);
 
 
+%% Constraint 5 (( U_i - U_j - 2.r_ij.P_br - 2.x_ij.Qbr + M.Xbr <= M ))
+U5 = zeros(len.Pbr,len.Sn);
+Pbr5 = zeros(len.Pbr); Qbr5 = Pbr5;
+Xbr5 = zeros(len.Xbr);
+for i = 1:len.Pbr
+    U5(i,data.branch(i,2)) = 1; % U_it
+    U5(i,data.branch(i,3)) = -1; % U_jt
+    Pbr5(i,i) = -2 * data.branch(i,6); % - 2.r_ij.P_brt
+    Qbr5(i,i) = -2 * data.branch(i,7); % - 2.x_ij.Qbrt
+    Xbr5(i,i) = bigM; % M.Xbrt
+end
+A5 = zeros(size(U5,1),len.total);
+A5(:,(inp.U)) = U5;
+A5(:,(inp.Pbr)) = Pbr5;
+A5(:,(inp.Qbr)) = Qbr5;
+A5(:,(inp.Xbr)) = Xbr5;
+b5 = ones(size(U5,1),1) .* bigM;
+ineq(5).A = concA(steps,A5);
+ineq(5).b = concB(steps,b5);
+
+%% Constraint 6 (( - U_i + U_j + 2.r_ij.P_br + 2.x_ij.Qbr + M.Xbr <= M ))
+% Be careful, Xbr does not change
+U6 = -U5; Pbr6 = -Pbr5; Qbr6 = -Qbr5; Xbr6 = Xbr5;
+A6 = zeros(size(U6,1),len.total);
+A6(:,inp.U) = U6;
+A6(:,inp.Pbr) = Pbr6;
+A6(:,inp.Qbr) = Qbr6;
+A6(:,inp.Xbr) = Xbr6;
+b6 = b5;
+ineq(6).A = concA(steps,A6);
+ineq(6).b = concB(steps,b6);
+
+%% Constraint 7-8 only for CLPU, skipped
+%% Constraint 9 and 10
+Pl9 = eye(len.Pl); Xl9 = -eye(len.Xl) .* data.load(:,4);
+Ql10 = eye(len.Ql); Xl10 = -eye(len.Xl) .* data.load(:,5);
+
+Aeq9 = zeros(size(Pl9,1),len.total);
+Aeq9(:,inp.Pl) = Pl9;
+Aeq9(:,inp.Xl) = Xl9;
+
+Aeq10 = zeros(size(Ql10,1),len.total);
+Aeq10(:,inp.Ql) = Ql10;
+Aeq10(:,inp.Xl) = Xl10;
+
+beq9 = zeros(len.Xl,1);
+beq10 = zeros(len.Xl,1);
+
+equ(9).Aeq = concA(steps,Aeq9);
+equ(9).beq = concB(steps,beq9);
+equ(10).Aeq = concA(steps,Aeq10);
+equ(10).beq = concB(steps,beq10);
+
+%% Constraint 13
+Sijmax = data.branch(:,9);
+Sij = Sijmax.*sqrt((2*pi/6)/sin(2*pi/6));
+
+% C.13 -- A 
+Pbr13a = -sqrt(3) * eye(len.Pbr);
+Qbr13a = -eye(len.Qbr);
+A13a = zeros(size(Pbr13a,1),len.total);
+A13a(:,inp.Pbr) = Pbr13a;
+A13a(:,inp.Qbr) = Qbr13a;
+b13a = sqrt(3) .* Sij;
+
+% C.13 -- B
+Pbr13b = -Pbr13a; Qbr13b = -Qbr13a;
+A13b = zeros(size(Pbr13b,1),len.total);
+A13b(:,inp.Pbr) = Pbr13b;
+A13b(:,inp.Qbr) = Qbr13b;
+b13b = b13a;
+
+A13 = [A13a; A13b];
+b13 = [b13a; b13b];
+
+ineq(13).A = concA(steps,A13);
+ineq(13).b = concB(steps,b13);
+
+%% Constraint 14
+% C.14 -- A
+Qbr14a = -eye(len.Qbr);
+A14a = zeros(size(Qbr14a,1),len.total);
+A14a(:,(inp.Qbr)) = Qbr14a;
+b14a = b13a/2;
+
+% C.14 -- B
+Qbr14b = eye(len.Qbr);
+A14b = zeros(size(Qbr14b,1),len.total);
+A14b(:,(inp.Qbr)) = Qbr14b;
+b14b = b14a;
+
+A14 = [A14a; A14b];
+b14 = [b14a; b14b];
+
+ineq(14).A = concA(steps,A14);
+ineq(14).b = concB(steps,b14);
+
+
 %% Running the MILP
 RunMILP;
 toc;
