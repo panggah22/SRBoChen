@@ -41,7 +41,7 @@ lower(inp.disc) = 0;
 % lower(inp.Ql) = 0;
 % lower(inp.U) = 0.95^2;
 % lower(inp.Eess) = data.ess(:,3) .* data.ess(:,5);
-
+% bounds;
 % Run MILP
 charint(1,1:len.total) = 'C';
 charint(1,inp.Sn(1):inp.Xessd(end)) = 'I';
