@@ -1,4 +1,5 @@
 *.mlx -crlf -diff -merge
+*.m -crlf -diff -merge
 *.mat -crlf -diff -merge
 *.fig -crlf -diff -merge
 *.mdl -crlf -diff -merge
