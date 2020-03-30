@@ -5,7 +5,6 @@ intmin = 1; % in minute
 inthour = intmin/60; % in hour
 bigM = 20000;
 
-
 %% Retrieve data
 data = data13bochenrev;
 
