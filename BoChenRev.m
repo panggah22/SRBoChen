@@ -4,8 +4,11 @@ steps = 10; % maximum time step
 intmin = 1; % in minute
 inthour = intmin/60; % in hour
 bigM = 20000;
-% ADDING COMMENTS
+
+
+%% Retrieve data
 data = data13bochenrev;
+
 %% Distflow equation
 len = lengthbochen(data);
 inp = inputvariables(len);
