@@ -270,13 +270,13 @@ ineq(13).b = concB(steps,b13);
 % C.14 -- A
 Qbr14a = -eye(len.Qbr);
 A14a = zeros(size(Qbr14a,1),len.total);
-A14a(:,(inp.Qbr)) = Qbr14a;
+A14a(:,inp.Qbr) = Qbr14a;
 b14a = b13a/2;
 
 % C.14 -- B
 Qbr14b = eye(len.Qbr);
 A14b = zeros(size(Qbr14b,1),len.total);
-A14b(:,(inp.Qbr)) = Qbr14b;
+A14b(:,inp.Qbr) = Qbr14b;
 b14b = b14a;
 
 A14 = [A14a; A14b];
@@ -285,6 +285,146 @@ b14 = [b14a; b14b];
 ineq(14).A = concA(steps,A14);
 ineq(14).b = concB(steps,b14);
 
+%% Constraint 15
+% C.15 -- A
+Pbr15a = sqrt(3) * eye(len.Pbr);
+Qbr15a = -eye(len.Qbr);
+A15a = zeros(size(Pbr15a,1),len.total);
+A15a(:,inp.Pbr) = Pbr15a;
+A15a(:,inp.Qbr) = Qbr15a;
+b15a = sqrt(3) .* Sij;
+
+% C.15 -- B
+Pbr15b = -Pbr15a; Qbr15b = -Qbr15a;
+A15b = zeros(size(Pbr15b,1),len.total);
+A15b(:,inp.Pbr) = Pbr15b;
+A15b(:,inp.Qbr) = Qbr15b;
+b15b = b15a;
+
+A15 = [A15a; A15b];
+b15 = [b15a; b15b];
+
+ineq(15).A = concA(steps,A15);
+ineq(15).b = concB(steps,b15);
+
+%% Constraint 16
+spin = 15/100; % Spinning reserve is set to 15 percent
+Pl16 = (1+spin) .* ones(1,len.Pl);
+Xg16 = -data.gen(:,6)';
+Xessd16 = -data.ess(:,15)';
+A16 = zeros(size(Pl16,1),len.total);
+A16(:,inp.Pl) = Pl16;
+A16(:,inp.Xg) = Xg16;
+A16(:,inp.Xessd) = Xessd16;
+b16 = 0;
+
+ineq(16).A = concA(steps,A16);
+ineq(16).b = concB(steps,b16);
+
+%% Constraint 17
+% C.17 -- A
+Pg17a = -eye(len.Pg);
+Xg17a = eye(len.Xg) .* data.gen(:,7);
+A17a = zeros(size(Pg17a,1),len.total);
+A17a(:,inp.Pg) = Pg17a;
+A17a(:,inp.Xg) = Xg17a;
+b17a = zeros(len.Xg,1);
+
+% C.17 -- B
+Pg17b = eye(len.Pg);
+Xg17b = -eye(len.Xg) .* data.gen(:,6);
+A17b = zeros(size(Pg17b,1),len.total);
+A17b(:,inp.Pg) = Pg17b;
+A17b(:,inp.Xg) = Xg17b;
+b17b = b17a;
+
+A17 = [A17a; A17b];
+b17 = [b17a; b17b];
+
+ineq(17).A = concA(steps,A17);
+ineq(17).b = concB(steps,b17);
+
+%% Constraint 18
+% C.18 -- A
+Qg18a = -eye(len.Pg);
+Xg18a = eye(len.Xg) .* data.gen(:,9);
+A18a = zeros(size(Qg18a,1),len.total);
+A18a(:,inp.Qg) = Qg18a;
+A18a(:,inp.Xg) = Xg18a;
+b18a = b17a;
+
+% C.18 -- B
+Qg18b = eye(len.Pg);
+Xg18b = -eye(len.Xg) .* data.gen(:,8);
+A18b = zeros(size(Qg18b,1),len.total);
+A18b(:,inp.Qg) = Qg18b;
+A18b(:,inp.Xg) = Xg18b;
+b18b = b18a;
+
+A18 = [A18a; A18b];
+b18 = [b18a; b18b];
+
+ineq(18).A = concA(steps,A18);
+ineq(18).b = concB(steps,b18);
+
+%% Constraint 19
+Pg19 = eye(len.Pg) .* tan(acos(data.gen(:,4)));
+Qg19 = -eye(len.Qg);
+
+Aeq19 = zeros(size(Pg19,1),len.total);
+Aeq19(:,inp.Pg) = Pg19;
+Aeq19(:,inp.Qg) = Qg19;
+Aeq19 = Aeq19(data.statgen ~= 1,:);
+beq19 = zeros(size(Aeq19,1),1);
+
+equ(19).Aeq = concA(steps,Aeq19);
+equ(19).beq = concB(steps,beq19);
+
+%% Constraint 20
+% C.20 -- A
+Pessc20a = -eye(len.Pessc);
+Xessc20a = eye(len.Xessc) .* data.ess(:,10);
+A20a = zeros(len.Pessc,len.total);
+A20a(:,inp.Pessc) = Pessc20a;
+A20a(:,inp.Xessc) = Xessc20a;
+b20a = zeros(len.Pessc,1);
+
+% C.20 -- B
+Pessc20b = eye(len.Pessc);
+Xessc20b = -eye(len.Xessc) .* data.ess(:,11);
+A20b = zeros(len.Pessc,len.total);
+A20b(:,inp.Pessc) = Pessc20b;
+A20b(:,inp.Xessc) = Xessc20b;
+b20b = b20a;
+
+A20 = [A20a; A20b];
+b20 = [b20a; b20b];
+
+ineq(20).A = concA(steps,A20);
+ineq(20).b = concB(steps,b20);
+
+%% Constraint 21
+% C.21 -- A
+Pessd21a = -eye(len.Pessd);
+Xessd21a = eye(len.Xessd) .* data.ess(:,14);
+A21a = zeros(len.Pessd,len.total);
+A21a(:,inp.Pessd) = Pessd21a;
+A21a(:,inp.Xessd) = Xessd21a;
+b21a = zeros(len.Pessd,1);
+
+% C.21 -- B
+Pessd21b = eye(len.Pessd);
+Xessd21b = -eye(len.Xessd) .* data.ess(:,15);
+A21b = zeros(len.Pessd,len.total);
+A21b(:,inp.Pessd) = Pessd21b;
+A21b(:,inp.Xessd) = Xessd21b;
+b21b = zeros(len.Pessd,1);
+
+A21 = [A21a; A21b];
+b21 = [b21a; b21b];
+
+ineq(21).A = concA(steps,A21);
+ineq(21).b = concB(steps,b21);
 
 %% Running the MILP
 RunMILP;
