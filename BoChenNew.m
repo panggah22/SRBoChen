@@ -67,7 +67,7 @@ end
 Aeq55 = zeros(len.Xg,len.total);
 Aeq55(:,inp.U) = U55;
 Aeq55 = Aeq55(data.statgen == 1,:);
-beq55 = ones(size(Aeq55,1),1) .* (1.05^2);
+beq55 = ones(size(Aeq55,1),1) .* (1^2);
 
 equ(55).Aeq = concA(steps,Aeq55);
 equ(55).beq = concB(steps,beq55);
