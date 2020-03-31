@@ -568,6 +568,147 @@ b31 = data.ess(:,21)*intmin;
 ineq(31).A = initials(steps,A31);
 ineq(31).b = b31;
 
+%% Constraint 32
+% C.32 -- A
+Pessc32a = -eye(len.Pessc);
+Pessc32a_bef = eye(len.Pessc);
+A32a = zeros(len.Pessc,len.total);
+A32a_bef = A32a;
+A32a(:,inp.Pessc) = Pessc32a;
+A32a_bef(:,inp.Pessc) = Pessc32a_bef;
+b32a = intmin .* data.ess(:,18);
+
+[A32a, b32a] = time_relate(steps,A32a_bef,A32a,b32a);
+
+% C.32 -- B
+Pessc32b = eye(len.Pessc);
+Pessc32b_bef = -eye(len.Pessc);
+A32b = zeros(len.Pessc,len.total);
+A32b_bef = A32b;
+A32b(:,inp.Pessc) = Pessc32b;
+A32b_bef(:,inp.Pessc) = Pessc32b_bef;
+b32b = intmin .* data.ess(:,18);
+
+[A32b, b32b] = time_relate(steps,A32b_bef,A32b,b32b);
+
+A32 = [A32a; A32b];
+b32 = [b32a; b32b];
+
+ineq(32).A = A32;
+ineq(32).b = b32;
+
+%% Constraint 33
+% C.33 -- A
+Pessd33a = -eye(len.Pessd);
+Pessd33a_bef = eye(len.Pessd);
+A33a = zeros(len.Pessd,len.total);
+A33a_bef = A33a;
+A33a(:,inp.Pessd) = Pessd33a;
+A33a_bef(:,inp.Pessd) = Pessd33a_bef;
+b33a = intmin .* data.ess(:,19);
+
+[A33a, b33a] = time_relate(steps,A33a_bef,A33a,b33a);
+
+% C.33 -- B
+Pessd33b = eye(len.Pessd);
+Pessd33b_bef = -eye(len.Pessd);
+A33b = zeros(len.Pessd,len.total);
+A33b_bef = A33b;
+A33b(:,inp.Pessd) = Pessd33b;
+A33b_bef(:,inp.Pessd) = Pessd33b_bef;
+b33b = intmin .* data.ess(:,19);
+
+[A33b, b33b] = time_relate(steps,A33b_bef,A33b,b33b);
+
+A33 = [A33a; A33b];
+b33 = [b33a; b33b];
+
+ineq(33).A = A33;
+ineq(33).b = b33;
+
+%% Constraint 34
+% C.34 -- A
+Qessc34a = -eye(len.Qessc);
+Qessc34a_bef = eye(len.Qessc);
+A34a = zeros(len.Qessc,len.total);
+A34a_bef = A34a;
+A34a(:,inp.Qessc) = Qessc34a;
+A34a_bef(:,inp.Qessc) = Qessc34a_bef;
+b34a = intmin .* data.ess(:,20);
+
+[A34a, b34a] = time_relate(steps,A34a_bef,A34a,b34a);
+
+% C.34 -- B
+Qessc34b = eye(len.Qessc);
+Qessc34b_bef = -eye(len.Qessc);
+A34b = zeros(len.Qessc,len.total);
+A34b_bef = A34b;
+A34b(:,inp.Qessc) = Qessc34b;
+A34b_bef(:,inp.Qessc) = Qessc34b_bef;
+b34b = intmin .* data.ess(:,20);
+
+[A34b, b34b] = time_relate(steps,A34b_bef,A34b,b34b);
+
+A34 = [A34a; A34b];
+b34 = [b34a; b34b];
+
+ineq(34).A = A34;
+ineq(34).b = b34;
+
+%% Constraint 35
+% C.35 -- A
+Qessd35a = -eye(len.Qessd);
+Qessd35a_bef = eye(len.Qessd);
+A35a = zeros(len.Qessd,len.total);
+A35a_bef = A35a;
+A35a(:,inp.Qessd) = Qessd35a;
+A35a_bef(:,inp.Qessd) = Qessd35a_bef;
+b35a = intmin .* data.ess(:,21);
+
+[A35a, b35a] = time_relate(steps,A35a_bef,A35a,b35a);
+
+% C.35 -- B
+Qessd35b = eye(len.Qessd);
+Qessd35b_bef = -eye(len.Qessd);
+A35b = zeros(len.Qessd,len.total);
+A35b_bef = A35b;
+A35b(:,inp.Qessd) = Qessd35b;
+A35b_bef(:,inp.Qessd) = Qessd35b_bef;
+b35b = intmin .* data.ess(:,21);
+
+[A35b, b35b] = time_relate(steps,A35b_bef,A35b,b35b);
+
+A35 = [A35a; A35b];
+b35 = [b35a; b35b];
+
+ineq(35).A = A35;
+ineq(35).b = b35;
+
+%% Constraint 36
+con36a = zeros(len.Pessc,len.total);
+con36b = con36a; con36c = con36a; con36d = con36a;
+
+Pessc36a = eye(len.Pessc); 
+Pessd36b = eye(len.Pessd);  
+Qessc36c = eye(len.Qessc);  
+Qessd36d = eye(len.Qessd); 
+
+con36a(:,inp.Pessc) = Pessc36a;
+con36b(:,inp.Pessd) = Pessd36b;
+con36c(:,inp.Qessc) = Qessc36c;
+con36d(:,inp.Qessd) = Qessd36d;
+
+Aeq36a = lasts(steps,con36a); beq36a = zeros(len.Pessc,1);
+Aeq36b = lasts(steps,con36b); beq36b = zeros(len.Pessd,1);
+Aeq36c = lasts(steps,con36c); beq36c = zeros(len.Qessc,1);
+Aeq36d = lasts(steps,con36d); beq36d = zeros(len.Qessd,1);
+
+Aeq36 = [Aeq36a; Aeq36b; Aeq36c; Aeq36d];
+beq36 = [beq36a; beq36b; beq36c; beq36d];
+
+equ(36).Aeq = Aeq36;
+equ(36).beq = beq36;
+
 %% Running the MILP
 RunMILP;
 toc;
