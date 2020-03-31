@@ -497,6 +497,76 @@ beq25 = data.ess(:,5).*data.ess(:,4);
 equ(25).Aeq = initials(steps,Aeq25);
 equ(25).beq = beq25;
 
+%% Constraint 26 // Time dependent
+Eess26 = eye(len.Eess);
+Pessc26 = -inthour*eye(len.Pessc).*data.ess(:,8);
+Pessd26 = inthour*eye(len.Pessd)./data.ess(:,9);
+Aeq26 = zeros(len.Eess,len.total);
+Aeq26_bef = Aeq26;
+Aeq26(:,inp.Eess) = Eess26;
+Aeq26(:,inp.Pessc) = Pessc26;
+Aeq26(:,inp.Pessd) = Pessd26;
+
+Eess26_bef = -eye(len.Eess);
+Aeq26_bef(:,inp.Eess) = Eess26_bef;
+
+beq26 = zeros(len.Eess,1);
+[equ(26).Aeq, equ(26).beq] = time_relate(steps,Aeq26_bef,Aeq26,beq26);
+
+%% Constraint 27 // Can be changed directly into bound
+% C.27 -- A
+Eess27a = -eye(len.Eess);
+A27a = zeros(len.Eess,len.total);
+A27a(:,inp.Eess) = Eess27a;
+b27a = -data.ess(:,4) .* data.ess(:,6);
+
+% C.27 -- B
+Eess27b = eye(len.Eess);
+A27b = zeros(len.Eess,len.total);
+A27b(:,inp.Eess) = Eess27b;
+b27b = data.ess(:,4) .* data.ess(:,7);
+
+A27 = [A27a; A27b];
+b27 = [b27a; b27b];
+
+ineq(27).A = concA(steps,A27);
+ineq(27).b = concB(steps,b27);
+
+%% Constraint 28
+Pessc28 = eye(len.Pessc);
+A28 = zeros(len.Pessc,len.total);
+A28(:,inp.Pessc) = Pessc28;
+b28 = data.ess(:,18)*intmin;
+
+ineq(28).A = initials(steps,A28);
+ineq(28).b = b28;
+
+%% Constraint 29
+Pessd29 = eye(len.Pessd);
+A29 = zeros(len.Pessd,len.total);
+A29(:,inp.Pessd) = Pessd29;
+b29 = data.ess(:,19)*intmin;
+
+ineq(29).A = initials(steps,A29);
+ineq(29).b = b29;
+
+%% Constraint 30
+Qessc30 = eye(len.Qessc);
+A30 = zeros(len.Qessc,len.total);
+A30(:,inp.Qessc) = Qessc30;
+b30 = data.ess(:,20)*intmin;
+
+ineq(30).A = initials(steps,A30);
+ineq(30).b = b30;
+
+%% Constraint 31
+Qessd31 = eye(len.Qessd);
+A31 = zeros(len.Qessd,len.total);
+A31(:,inp.Qessd) = Qessd31;
+b31 = data.ess(:,21)*intmin;
+
+ineq(31).A = initials(steps,A31);
+ineq(31).b = b31;
 
 %% Running the MILP
 RunMILP;
