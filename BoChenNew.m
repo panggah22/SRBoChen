@@ -931,6 +931,20 @@ A48_bef(:,inp.Xg) = Xg48_bef;
 b48 = zeros(size(A48,1),1);
 [ineq(48).A,ineq(48).b] = time_relate(steps,A48_bef,A48,b48);
 
+%% Constraint 49
+Xl49 = -eye(len.Xl);
+Xl49_bef = eye(len.Xl);
+A49 = zeros(len.Xl,len.total);
+A49(:,inp.Xl) = Xl49;
+A49 = A49(data.statload == 2,:); % Only use the switchable load
+
+A49_bef = zeros(len.Xl,len.total);
+A49_bef(:,inp.Xl) = Xl49_bef;
+A49_bef = A49_bef(data.statload == 2,:); % Only use the switchable load
+
+b49 = zeros(size(A49,1),1);
+[ineq(49).A,ineq(49).b] = time_relate(steps,A49_bef,A49,b49);
+
 %% Running the MILP
 RunMILP;
 toc;
