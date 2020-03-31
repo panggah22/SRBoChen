@@ -37,7 +37,7 @@ b52 = zeros(size(A52,1),1);
 Sn53 = ones(1,len.Sn);
 Xbr53 = -ones(1,len.Xbr);
 Xg53 = -ones(1,len.Xg);
-Xg53(data.statgen ~= 1) = 0;
+Xg53(data.statgen ~= 1) = 0; % Set the non black-start DG to 0
 
 Aeq53 = zeros(1,len.total);
 Aeq53(:,inp.Sn) = Sn53;
@@ -67,7 +67,7 @@ end
 Aeq55 = zeros(len.Xg,len.total);
 Aeq55(:,inp.U) = U55;
 Aeq55 = Aeq55(data.statgen == 1,:);
-beq55 = ones(size(Aeq55,1),1) .* (1^2);
+beq55 = ones(size(Aeq55,1),1) .* (1.05^2);
 
 equ(55).Aeq = concA(steps,Aeq55);
 equ(55).beq = concB(steps,beq55);
