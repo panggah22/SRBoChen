@@ -426,6 +426,78 @@ b21 = [b21a; b21b];
 ineq(21).A = concA(steps,A21);
 ineq(21).b = concB(steps,b21);
 
+%% Constraint 22
+% C.22 -- A
+Qessc22a = -eye(len.Qessc);
+Xessc22a = eye(len.Xessc) .* data.ess(:,12);
+A22a = zeros(len.Qessc,len.total);
+A22a(:,(inp.Qessc)) = Qessc22a;
+A22a(:,(inp.Xessc)) = Xessc22a;
+b22a = zeros(len.Qessc,1);
+
+% C.22 -- B
+Qessc22b = eye(len.Qessc);
+Xessc22b = -eye(len.Xessc) .* data.ess(:,13);
+A22b = zeros(len.Qessc,len.total);
+A22b(:,(inp.Qessc)) = Qessc22b;
+A22b(:,(inp.Xessc)) = Xessc22b;
+b22b = zeros(len.Qessc,1);
+
+A22 = [A22a; A22b];
+b22 = [b22a; b22b];
+
+ineq(22).A = concA(steps,A22);
+ineq(22).b = concB(steps,b22);
+
+%% Constraint 23
+% C.23 -- A
+Qessd23a = -eye(len.Qessd);
+Xessd23a = eye(len.Xessd) .* data.ess(:,16);
+A23a = zeros(len.Qessd,len.total);
+A23a(:,(inp.Qessd)) = Qessd23a;
+A23a(:,(inp.Xessd)) = Xessd23a;
+b23a = zeros(len.Qessd,1);
+
+% C.23 -- B
+Qessd23b = eye(len.Qessd);
+Xessd23b = -eye(len.Xessd) .* data.ess(:,17);
+A23b = zeros(len.Qessd,len.total);
+A23b(:,(inp.Qessd)) = Qessd23b;
+A23b(:,(inp.Xessd)) = Xessd23b;
+b23b = zeros(len.Qessd,1);
+
+A23 = [A23a; A23b];
+b23 = [b23a; b23b];
+
+ineq(23).A = concA(steps,A23);
+ineq(23).b = concB(steps,b23);
+
+%% Constraint 24
+Xessc24 = eye(len.Xessc);
+Xessd24 = Xessc24;
+Sn24 = zeros(len.Xessc,len.Sn);
+for i = 1:len.Xessc
+    Sn24(i,data.ess(i,2)) = -1;
+end
+A24 = zeros(len.Xessc,len.total);
+A24(:,inp.Sn) = Sn24;
+A24(:,inp.Xessc) = Xessc24;
+A24(:,inp.Xessd) = Xessd24;
+b24 = zeros(len.Xessc,1);
+
+ineq(24).A = concA(steps,A24);
+ineq(24).b = concB(steps,b24);
+
+%% Constraint 25 // Time dependent, initial condition
+Eess25 = eye(len.Eess);
+Aeq25 = zeros(len.Eess,len.total);
+Aeq25(:,inp.Eess) = Eess25;
+beq25 = data.ess(:,5).*data.ess(:,4);
+
+equ(25).Aeq = initials(steps,Aeq25);
+equ(25).beq = beq25;
+
+
 %% Running the MILP
 RunMILP;
 toc;
