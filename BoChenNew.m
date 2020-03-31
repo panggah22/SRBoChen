@@ -709,6 +709,228 @@ beq36 = [beq36a; beq36b; beq36c; beq36d];
 equ(36).Aeq = Aeq36;
 equ(36).beq = beq36;
 
+%% Constraint 37 
+% C.37 -- A
+U37a = -eye(len.U);
+Sn37a = eye(len.Sn) .* (0.95^2);
+A37a = zeros(len.U,len.total);
+A37a(:,inp.U) = U37a;
+A37a(:,inp.Sn) = Sn37a;
+b37a = zeros(len.U,1);
+
+% C.37 -- B
+U37b = eye(len.U);
+Sn37b = -eye(len.Sn) .* (1.05^2);
+A37b = zeros(len.U,len.total);
+A37b(:,inp.U) = U37b;
+A37b(:,inp.Sn) = Sn37b;
+b37b = zeros(len.U,1);
+
+A37 = [A37a; A37b];
+b37 = [b37a; b37b];
+
+ineq(37).A = concA(steps,A37);
+ineq(37).b = concB(steps,b37);
+
+%% Constraint 38 // time dependent
+% C.38 -- A
+Pg38a = -eye(len.Pg);
+Pg38a_bef = eye(len.Pg);
+A38a = zeros(len.Pg,len.total);
+A38a(:,inp.Pg) = Pg38a;
+A38a_bef = zeros(len.Pg,len.total);
+A38a_bef(:,inp.Pg) = Pg38a_bef;
+b38a = data.gen(:,10) * intmin;
+[A38a,b38a] = time_relate(steps,A38a_bef,A38a,b38a);
+
+% C.38 -- B
+Pg38b = eye(len.Pg);
+Pg38b_bef = -eye(len.Pg);
+A38b = zeros(len.Pg,len.total);
+A38b(:,inp.Pg) = Pg38b;
+A38b_bef = zeros(len.Pg,len.total);
+A38b_bef(:,inp.Pg) = Pg38b_bef;
+b38b = data.gen(:,10) * intmin;
+[A38b,b38b] = time_relate(steps,A38b_bef,A38b,b38b);
+
+A38 = [A38a; A38b];
+b38 = [b38a; b38b];
+
+ineq(38).A = A38;
+ineq(38).b = b38;
+
+%% Constraint 39
+Xl39 = ones(1,len.Xl) .* data.load(:,4)' .* data.load(:,7)';
+Xl39_bef = -Xl39;
+Xg39 = -ones(1,len.Xg) .* data.gen(:,6)' .* data.gamma;
+Xessd39 = -ones(1,len.Xessd) .* data.ess(:,15)' .* data.gamma;
+
+A39 = zeros(1,len.total);
+A39(:,inp.Xl) = Xl39;
+A39(:,inp.Xg) = Xg39;
+A39(:,inp.Xessd) = Xessd39;
+
+A39_bef = zeros(1,len.total);
+A39_bef(:,inp.Xl) = Xl39_bef;
+
+b39 = zeros(size(A39,1),1);
+
+[A39,b39] = time_relate(steps,A39_bef,A39,b39); 
+ineq(39).A = A39;
+ineq(39).b = b39;
+
+%% CONNECTIVITY AND SEQUENCING CONSTRAINTS
+%% Constraint 40
+Xg40 = eye(len.Xg);
+Sn40 = zeros(len.Xg,len.Sn);
+for i = 1:len.Xg % Fills corresponding node that contains generator
+    Sn40(i,data.gen(i,2)) = -1;
+end
+
+A40 = zeros(len.Xg,len.total);
+A40(:,inp.Xg) = Xg40;
+A40(:,inp.Sn) = Sn40;
+A40 = A40(data.statgen==2,:); % Only use the non black-start DG
+
+b40 = zeros(size(A40,1),1);
+
+ineq(40).A = concA(steps,A40);
+ineq(40).b = concB(steps,b40);
+
+%% Constraint 41
+Xbr41 = eye(len.Xbr);
+Sn41 = zeros(len.Xbr,len.Sn);
+for i = 1:len.Xbr
+    Sn41(i,data.branch(i,2)) = -1;
+end
+A41 = zeros(len.Xbr,len.total);
+A41(:,inp.Xbr) = Xbr41;
+A41(:,inp.Sn) = Sn41;
+A41 = A41(data.statbr == 2,:); % Only use the switchable line
+b41 = zeros(size(A41,1),1);
+
+ineq(41).A = concA(steps,A41);
+ineq(41).b = concB(steps,b41);
+
+%% Constraint 42
+Xbr42 = eye(len.Xbr);
+Sn42 = zeros(len.Xbr,len.Sn);
+for i = 1:len.Xbr
+    Sn42(i,data.branch(i,3)) = -1;
+end
+A42 = zeros(len.Xbr,len.total);
+A42(:,inp.Xbr) = Xbr42;
+A42(:,inp.Sn) = Sn42;
+A42 = A42(data.statbr == 2,:); % Only use the switchable line
+b42 = zeros(size(A42,1),1);
+
+ineq(42).A = concA(steps,A42);
+ineq(42).b = concB(steps,b42);
+
+%% Constraint 43
+% C.43 -- A
+Xbr43a = eye(len.Xbr);
+Sn43a = zeros(len.Xbr,len.Sn);
+for i = 1:len.Xbr
+    Sn43a(i,data.branch(i,2)) = -1;
+end
+Aeq43a = zeros(len.Xbr,len.total);
+Aeq43a(:,inp.Xbr) = Xbr43a;
+Aeq43a(:,inp.Sn) = Sn43a;
+Aeq43a = Aeq43a(data.statbr == 1,:); % Only use the non-switchable line
+beq43a = zeros(size(Aeq43a,1),1);
+
+% C.43 -- B
+Xbr43b = eye(len.Xbr);
+Sn43b = zeros(len.Xbr,len.Sn);
+for i = 1:len.Xbr
+    Sn43b(i,data.branch(i,3)) = -1;
+end
+Aeq43b = zeros(len.Xbr,len.total);
+Aeq43b(:,inp.Xbr) = Xbr43b;
+Aeq43b(:,inp.Sn) = Sn43b;
+Aeq43b = Aeq43b(data.statbr == 1,:); % Only use the non-switchable line
+beq43b = zeros(size(Aeq43b,1),1);
+
+Aeq43 = [Aeq43a; Aeq43b];
+beq43 = [beq43a; beq43b];
+
+equ(43).Aeq = concA(steps,Aeq43);
+equ(43).beq = concB(steps,beq43);
+
+%% Constraint 44
+Sn44 = zeros(len.Xg,len.Sn);
+for i = 1:len.Xg
+    Sn44(i,data.gen(i,2)) = 1;
+end
+Xg44 = -eye(len.Xg);
+Aeq44 = zeros(len.Xg,len.total);
+Aeq44(:,inp.Sn) = Sn44;
+Aeq44(:,inp.Xg) = Xg44;
+Aeq44 = Aeq44(data.statgen == 1,:); % Only use the black-start DG
+beq44 = zeros(size(Aeq44,1),1);
+
+equ(44).Aeq = concA(steps,Aeq44);
+equ(44).beq = concB(steps,beq44);
+
+%% Constraint 45
+Xl45 = eye(len.Xl);
+Sn45 = zeros(len.Xl,len.Sn);
+for i = 1:len.Xl
+    Sn45(i,data.load(i,2)) = -1;
+end
+A45 = zeros(len.Xl,len.total);
+A45(:,inp.Xl) = Xl45;
+A45(:,inp.Sn) = Sn45;
+A45 = A45(data.statload == 2,:); % Only use the switchable load
+b45 = zeros(size(A45,1),1);
+
+ineq(45).A = concA(steps,A45);
+ineq(45).b = concB(steps,b45);
+
+%% Constraint 46
+Xl46 = eye(len.Xl);
+Sn46 = zeros(len.Xl,len.Sn);
+for i = 1:len.Xl
+    Sn46(i,data.load(i,2)) = -1;
+end
+Aeq46 = zeros(len.Xl,len.total);
+Aeq46(:,inp.Xl) = Xl46;
+Aeq46(:,inp.Sn) = Sn46;
+Aeq46 = Aeq46(data.statload == 1,:); % Only use the non-switchable load
+beq46 = zeros(size(Aeq46,1),1);
+
+equ(46).Aeq = concA(steps,Aeq46);
+equ(46).beq = concB(steps,beq46);
+
+%% Constraint 47
+Xbr47 = -eye(len.Xbr);
+Xbr47_bef = eye(len.Xbr);
+
+A47 = zeros(len.Xbr,len.total);
+A47(:,inp.Xbr) = Xbr47;
+A47 = A47(data.statbr == 2,:); % Only use the switchable line
+
+A47_bef = zeros(len.Xbr,len.total);
+A47_bef(:,inp.Xbr) = Xbr47_bef;
+A47_bef = A47_bef(data.statbr == 2,:); % Only use the switchable line
+
+b47 = zeros(size(A47,1),1);
+[ineq(47).A,ineq(47).b] = time_relate(steps,A47_bef,A47,b47);
+
+%% Constraint 48
+Xg48 = -eye(len.Xg);
+Xg48_bef = eye(len.Xg);
+
+A48 = zeros(len.Xg,len.total);
+A48(:,inp.Xg) = Xg48;
+
+A48_bef = zeros(len.Xg,len.total);
+A48_bef(:,inp.Xg) = Xg48_bef;
+
+b48 = zeros(size(A48,1),1);
+[ineq(48).A,ineq(48).b] = time_relate(steps,A48_bef,A48,b48);
+
 %% Running the MILP
 RunMILP;
 toc;
