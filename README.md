@@ -1,6 +1,6 @@
 # SRBoChen
 Please Search for the file BoChenNew, and run it.
-However, the result is still in the form of matrix.
+The energization of loads, DGs, branches, and nodes are printed in simple tables
 
-The printed result and plots will be added later.
+Now added plots for SoC, active power and reactive power dispatch.
 Thank you
