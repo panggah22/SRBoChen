@@ -27,3 +27,92 @@ for i = 1:steps
         ts_branch{i,2} = ts_branch{i,1};
     end
 end
+
+%% Print the MILP Result
+% load energization
+fprintf('-------------------------\n');
+fprintf('  Energization of loads\n');
+fprintf('-------------------------\n');
+fprintf('Timestep | Load energized\n');
+fprintf('-------------------------\n');
+for i = 1:steps
+    fprintf('  %d         ',i);
+    for j = 1:size(ts_load{i,2},1)
+        if ~isempty(ts_load{i,2})
+            if j == size(ts_load{i,2},1)
+                fprintf('L%d',ts_load{i,2}(j));
+            else
+                fprintf('L%d, ',ts_load{i,2}(j));
+            end
+        else
+            fprintf('     ');
+        end
+    end
+    fprintf('\n');
+end
+
+% DG energization
+fprintf('--------------------------\n');
+fprintf('Energization of generators\n');
+fprintf('--------------------------\n');
+fprintf('Timestep | DG energized\n');
+fprintf('--------------------------\n');
+for i = 1:steps
+    fprintf('  %d         ',i);
+    for k = 1:size(ts_gen{i,2},1)
+        if ~isempty(ts_gen{i,2})
+            if k == size(ts_gen{i,2},1)
+                fprintf('DG%d',ts_gen{i,2}(k));
+            else
+                fprintf('DG%d, ',ts_gen{i,2}(k));
+            end
+        else
+            fprintf('     ');
+        end
+    end
+    fprintf('\n');
+end
+
+% load energization
+fprintf('---------------------------\n');
+fprintf('  Energization of branches\n');
+fprintf('---------------------------\n');
+fprintf('Timestep | Branch energized\n');
+fprintf('---------------------------\n');
+for i = 1:steps
+    fprintf('  %d         ',i);
+    for j = 1:size(ts_branch{i,2},1)
+        if ~isempty(ts_branch{i,2})
+            if j == size(ts_branch{i,2},1)
+                fprintf('B%d',ts_branch{i,2}(j));
+            else
+                fprintf('B%d, ',ts_branch{i,2}(j));
+            end
+        else
+            fprintf('     ');
+        end
+    end
+    fprintf('\n');
+end
+
+% % load energization
+% fprintf('--------------------------\n');
+% fprintf('   Energization of ESS\n');
+% fprintf('--------------------------\n');
+% fprintf('Timestep | Nodes energized\n');
+% fprintf('--------------------------\n');
+% for i = 1:steps
+%     fprintf('  %d         ',i);
+%     for j = 1:size(ts_node{i,2},1)
+%         if ~isempty(ts_node{i,2})
+%             if j == size(ts_node{i,2},1)
+%                 fprintf('ESS%d',ts_node{i,2}(j));
+%             else
+%                 fprintf('ESS%d, ',ts_node{i,2}(j));
+%             end
+%         else
+%             fprintf('     ');
+%         end
+%     end
+%     fprintf('\n');
+% end
