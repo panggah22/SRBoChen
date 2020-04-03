@@ -1,6 +1,9 @@
 %% MILP Service Restoration BoChen
 tic; 
+close all;
 clear;
+setVmax = 1.05; % set maximum voltage
+setVmin = 0.95; % set minimum voltage
 steps = 10; % maximum time step
 intmin = 1; % in minute
 inthour = intmin/60; % in hour
@@ -67,7 +70,7 @@ end
 Aeq55 = zeros(len.Xg,len.total);
 Aeq55(:,inp.U) = U55;
 Aeq55 = Aeq55(data.statgen == 1,:);
-beq55 = ones(size(Aeq55,1),1) .* (1.05^2);
+beq55 = ones(size(Aeq55,1),1) .* (setVmax^2);
 
 equ(55).Aeq = concA(steps,Aeq55);
 equ(55).beq = concB(steps,beq55);
@@ -712,7 +715,7 @@ equ(36).beq = beq36;
 %% Constraint 37 
 % C.37 -- A
 U37a = -eye(len.U);
-Sn37a = eye(len.Sn) .* (0.95^2);
+Sn37a = eye(len.Sn) .* (setVmin^2);
 A37a = zeros(len.U,len.total);
 A37a(:,inp.U) = U37a;
 A37a(:,inp.Sn) = Sn37a;
@@ -720,7 +723,7 @@ b37a = zeros(len.U,1);
 
 % C.37 -- B
 U37b = eye(len.U);
-Sn37b = -eye(len.Sn) .* (1.05^2);
+Sn37b = -eye(len.Sn) .* (setVmax^2);
 A37b = zeros(len.U,len.total);
 A37b(:,inp.U) = U37b;
 A37b(:,inp.Sn) = Sn37b;
@@ -948,3 +951,5 @@ b49 = zeros(size(A49,1),1);
 %% Running the MILP
 RunMILP;
 toc;
+AllPrint;
+AllPlot
