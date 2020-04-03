@@ -24,7 +24,7 @@ P_all = [Pesscd x(inp.Pg,:)']*data.MVAbase*1000;
 
 bar(P_all,'stacked');
 
-%% Active power generated
+%% Rective power generated
 esscdq = [x(inp.Qessc,:); x(inp.Qessd,:)]';
 Qesscd = zeros(size(esscdq,1),1);
 for i = 1:size(esscdq,1)
