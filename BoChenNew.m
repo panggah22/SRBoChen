@@ -952,4 +952,4 @@ b49 = zeros(size(A49,1),1);
 RunMILP;
 toc;
 AllPrint;
-AllPlot
+AllPlot;
