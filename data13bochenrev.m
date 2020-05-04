@@ -91,7 +91,7 @@ data.gen = [(1:data.num_gen)' n_gen data.gen];
 %% ESS data
 data.ess = [
 %   Node    Rating  Socini  Socmin  Socmax  C_eff   D_eff   PCmin   PCmax   QCmin   QCmax   PDmin   PDmax   QDmin   QDmax   PRC     PRD     QRC     QRD
-    632     200     10      10      100     0.9     0.9     0       5       0       2       0       5       0       2       250     250     250     250
+    632     200     30      10      100     0.9     0.9     0       5       0       2       0       5       0       2       250     250     250     250
     ];
 
 % Converting power to Per Unit Value

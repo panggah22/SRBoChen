@@ -3,7 +3,7 @@
 figure
 ESSplot = x(inp.Eess,:)./data.ess(:,4)'*100;
 plot(ESSplot);
-ylim([9 15])
+ylim([9 40])
 
 %% Active power generated
 esscdp = [x(inp.Pessc,:); x(inp.Pessd,:)]';
